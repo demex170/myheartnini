@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<!-- Add to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="💖 Valentine">
+
+<title>Valentine 💖</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Phone */
+.phone {
+    width: 320px;
+    height: 640px;
+    background: #000;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+}
+
+.screen {
+    height: 100%;
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ---------- LOCK SCREEN ---------- */
+.lock {
+    height: 100%;
+    background: url("photo.jpg") center/cover no-repeat;
+    position: relative;
+    color: white;
+}
+
+.lock::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+}
+
+.lock-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding-top: 90px;
+}
+
+.time {
+    font-size: 52px;
+}
+
+.notification {
+    background: rgba(255,255,255,0.95);
+    color: #000;
+    margin: 40px 16px;
+    padding: 14px;
+    border-radius: 16px;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* ---------- PASSWORD ---------- */
+.password {
+    height: 100%;
+    background: url("photo.jpg") center/cover no-repeat;
+    position: relative;
+}
+
+.password::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.55);
+}
+
+.pass-box {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 85%;
+    background: rgba(255,255,255,0.2);
+    border-radius: 26px;
+    padding: 26px;
+    color: white;
+    text-align: center;
+}
+
+/* ---------- APP ---------- */
+.app {
+    background: #f5f5f7;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation bar */
+.nav {
+    height: 50px;
+    background: #f5f5f7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border-bottom: 1px solid #ddd;
+    font-weight: 600;
+}
+
+.nav span {
+    color: #007aff;
+}
+
+/* Chat */
+.chat {
+    flex: 1;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+.bubble {
+    max-width: 75%;
+    padding: 14px;
+    border-radius: 20px;
+    opacity: 0;
+}
+
+.from-d { background: #e5e5ea; }
+.from-n {
+    background: #ff4d6d;
+    color: white;
+    align-self: flex-end;
+}
+
+/* Question */
+.question {
+    padding: 10px;
+    text-align: center;
+}
+
+button {
+    padding: 12px 26px;
+    border-radius: 30px;
+    border: none;
+    font-size: 16px;
+    margin: 5px;
+}
+
+.yes { background: #ff4d6d; color: white; }
+.no { background: #ddd; }
+
+/* FINAL */
+.final {
+    background: url("photo.jpg") center/cover no-repeat;
+    height: 100%;
+    position: relative;
+}
+
+.final::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+}
+
+.final-text {
+    position: relative;
+    z-index: 2;
+    color: white;
+    text-align: center;
+    top: 40%;
+}
+
+.hidden { display: none; }
+</style>
+</head>
+
+<body>
+
+<audio id="unlockSound" src="unlock.mp3"></audio>
+<audio id="msgSound" src="message.mp3"></audio>
+
+<div class="phone">
+<div class="screen">
+
+<!-- LOCK -->
+<div id="lock" class="lock">
+    <div class="lock-content">
+        <div class="time" id="time"></div>
+        <div class="notification" onclick="openPassword()">
+            <strong>დემეტრე</strong><br>
+            დააჭირე აქ, სიუპრიზი მაქვს 💝
+        </div>
+    </div>
+</div>
+
+<!-- PASSWORD -->
+<div id="password" class="password hidden">
+    <div class="pass-box">
+        <div class="card">
+            <h3>შეიყვანე სიყვარულის კოდი</h3>
+            <p>მინიშნება: 1234</p>
+            <input id="code" type="password">
+            <button onclick="check()">გახსნა ❤️</button>
+        </div>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app hidden">
+    <div class="nav">
+        <span>‹</span>
+        დემეტრე
+        <span>⋯</span>
+    </div>
+
+    <div class="chat" id="chat"></div>
+
+    <div class="question" id="question"></div>
+</div>
+
+<!-- FINAL -->
+<div id="final" class="final hidden">
+    <div class="final-text">
+        <h2>ნინი 💖</h2>
+        <p>შენ ხარ ჩემი სამყარო</p>
+        <p>გილოცავ ვალენტინობას ❤️</p>
+    </div>
+</div>
+
+</div>
+</div>
+
+<script>
+const messages = [
+ "გამარჯობა ჩემო სიცოცხლევ ❤️",
+ "დღეს მთელი დღე შენზე ვფიქრობდი…",
+ "ვიცი რომ შეიძლება უცნაურია 😅",
+ "მაგრამ შენ ჩემთვის ძალიან მნიშვნელოვანი ხარ",
+ "და მინდა გკითხო რაღაც…"
+];
+
+const questions = [
+ "იქნები ჩემი ვალენტინი? 💘",
+ "მართლა? ბოლომდე? 🥺",
+ "დარწმუნებული ხარ? ❤️",
+ "გპირდები, რომ გაგაბედნიერებ",
+ "მაშინ საბოლოოდ… კი? 💖"
+];
+
+let m = 0, q = 0;
+const chat = document.getElementById("chat");
+
+function openPassword() {
+    unlockSound.play();
+    lock.classList.add("hidden");
+    password.classList.remove("hidden");
+}
+
+function check() {
+    if (code.value === "1234") {
+        password.classList.add("hidden");
+        app.classList.remove("hidden");
+        sendNext();
+    }
+}
+
+function sendNext() {
+    if (m < messages.length) {
+        sendMessage(messages[m++]);
+        setTimeout(sendNext, 1500);
+    } else {
+        ask();
+    }
+}
+
+function sendMessage(text) {
+    const bubble = document.createElement("div");
+    bubble.className = "bubble from-d";
+    chat.appendChild(bubble);
+    msgSound.play();
+    let i = 0;
+    const t = setInterval(() => {
+        bubble.textContent += text[i++];
+        bubble.style.opacity = 1;
+        if (i === text.length) clearInterval(t);
+    }, 35);
+}
+
+function ask() {
+    question.innerHTML = `
+        <h4>${questions[q]}</h4>
+        <button class="yes" onclick="yes()">კი 💖</button>
+        <button class="no" onclick="no()">არა 😅</button>
+    `;
+}
+
+function no() {
+    q++;
+    document.querySelector(".yes").style.transform = "scale(1.2)";
+    if (q < questions.length) ask();
+}
+
+function yes() {
+    if (q < questions.length - 1) {
+        q++;
+        ask();
+    } else {
+        app.classList.add("hidden");
+        final.classList.remove("hidden");
+    }
+}
+
+function updateTime() {
+    time.textContent = new Date().toLocaleTimeString("ka-GE", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+setInterval(updateTime, 1000);
+updateTime();
+</script>
+
+</body>
+</html>
